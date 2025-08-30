@@ -1,0 +1,16 @@
+python-dotenv==1.0.0
+tqdm==4.66.5
+requests==2.32.3
+pandas==2.2.2
+flask==3.0.3
+streamlit==1.39.0
+faiss-cpu==1.8.0
+sentence-transformers==3.0.1
+transformers==4.44.2
+torch==2.4.0
+langchain==0.3.27
+langchain-community==0.3.27
+langchain-core==0.3.72
+langchainhub
+together==1.2.1
+flask-cors==5.0.0

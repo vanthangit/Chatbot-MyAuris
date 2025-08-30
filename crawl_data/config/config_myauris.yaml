@@ -1,0 +1,26 @@
+services:
+  - https://myauris.vn/dich-vu/boc-su-tham-my
+  - https://myauris.vn/dich-vu/cao-voi-rang
+  - https://myauris.vn/dich-vu/cau-rang-su
+  - https://myauris.vn/dich-vu/dan-su-phu-mang-su
+  - https://myauris.vn/dich-vu/dieu-tri-tuy
+  - https://myauris.vn/dich-vu/nho-rang
+  - https://myauris.vn/dich-vu/nieng-rang-mac-cai
+  - https://myauris.vn/dich-vu/phu-rang-su
+  - https://myauris.vn/dich-vu/tram-rang
+  - https://myauris.vn/dich-vu/trong-rang-implant
+
+
+selectors:
+  main_content: "main"
+  question_tags: ["h2", "h3"]
+  is_question_regex: ".*\\?+"
+  exclude_keywords:
+    - "Báo chí"
+    - "Câu hỏi thường gặp"
+    - "LÝ DO"
+faq_section:
+  section_tags: ["section", "div"]
+  title_keyword: "câu hỏi thường gặp"
+  question_selector: "a.accordion-title span"
+  answer_selector: ".accordion-inner"
