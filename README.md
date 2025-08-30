@@ -44,5 +44,28 @@ Pipeline chính của hệ thống bao gồm:
 
 ---
 
+## 🚀 Hướng dẫn chạy dự án
 
+### 1️⃣ Clone repo & cài môi trường
+```bash
+git clone https://github.com/vanthangit/Chatbot-MyAuris.git
+cd build-chatbot
+pip install -r requirements.txt
 
+### 2️⃣ Crawl & xử lý dữ liệu
+python run_pipeline.py
+
+### 3️⃣ Chạy API Backend
+python app.py
+
+### 4️⃣ Chạy Frontend Chatbot
+streamlit run chat_ui.py
+
+---
+
+## 📊 Hướng phát triển tiếp theo
+
+- Thêm **evaluation pipeline** với **Ragas**.  
+- Tích hợp vào **hệ thống Data Lakehouse** cho lưu trữ & phân tích dữ liệu.  
+- **Deploy chatbot** lên cloud (AWS / GCP / Azure hoặc Render / Heroku / Docker).  
+- Thu thập & phân tích **user feedback** để cải thiện chatbot.  
