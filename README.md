@@ -3,6 +3,9 @@
 ## 📌 Giới thiệu
 Dự án xây dựng **Chatbot AI cho Nha khoa My Auris** với mục tiêu tự động trả lời các câu hỏi thường gặp (FAQ) của khách hàng. Chatbot sử dụng mô hình ngôn ngữ lớn (LLM) kết hợp với kỹ thuật **RAG (Retrieval-Augmented Generation)** để cung cấp câu trả lời chính xác dựa trên dữ liệu dịch vụ nha khoa.
 
+<img width="803" height="449" alt="image" src="https://github.com/user-attachments/assets/3adf8123-563b-44aa-8087-c4699e436de5" />
+
+
 ---
 
 ## 🏗️ Kiến trúc hệ thống
