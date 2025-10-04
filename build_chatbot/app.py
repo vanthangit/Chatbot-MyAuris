@@ -1,22 +1,28 @@
+import os
+import re
+import json
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
-from dotenv import load_dotenv
-from together import Together
-import json
-import os
-import re
 from router import Route, SemanticRouter
 from samplequestions import serviceSample, chitchatSample
 from reflection import Reflection
 
+# Vertex AI
+from google import genai
+from rich import print as rich_print
+
 app = Flask(__name__)
 load_dotenv()
 
-# Kiểm tra API key
-if not os.getenv("TOGETHER_API_KEY"):
-    raise ValueError("TOGETHER_API_KEY không được thiết lập trong biến môi trường.")
+# Google Cloud config
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "chatbot-myauris")
+LOCATION = os.getenv("GOOGLE_CLOUD_REGION", "us-central1")
+MODEL_ID = "gemini-2.0-flash"
+
+client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
 
 # Đường dẫn tới dữ liệu và FAISS index
 DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../crawl_data/data/clean/myauris_allqa.jsonl"))
@@ -46,19 +52,13 @@ else:
     vectorstore.save_local(INDEX_PATH)
 retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-
 # Router setup
 serviceRoute = Route("service", serviceSample)
 chitchatRoute = Route("chitchat", chitchatSample)
-
 semantic_router = SemanticRouter(embedding_model, [serviceRoute, chitchatRoute])
 
-
-# Together API
-client = Together(api_key=os.getenv("TOGETHER_API_KEY"))
-model_name = "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
-
-reflection = Reflection(client, model_name)
+# Reflection vẫn giữ (nếu bạn muốn dùng LLM để rewrite query, có thể thay bằng Vertex AI luôn)
+reflection = Reflection(client, MODEL_ID)
 
 def generate_answer(query, docs):
     try:
@@ -67,19 +67,18 @@ def generate_answer(query, docs):
 Thông tin: {context}
 Câu hỏi: {query}
 Trả lời:"""
-        response = client.chat.completions.create(
-            model=model_name,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=None
-        )
-        answer = response.choices[0].message.content
-        cleaned_answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL).strip()
 
+        response = client.models.generate_content(
+            model=MODEL_ID,
+            contents=prompt,
+        )
+
+        answer = response.text.strip()
+        cleaned_answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL).strip()
         return cleaned_answer
     except Exception as e:
-        return f"Lỗi khi gọi API: {str(e)}"
-    
+        return f"Lỗi khi gọi Vertex AI: {str(e)}"
+
 def generate_chitchat_answer(query):
     try:
         prompt = f"""Bạn là trợ lý tư vấn nha khoa My Auris. Trả lời ngắn gọn, tự nhiên bằng tiếng Việt.
@@ -87,17 +86,17 @@ Nếu câu hỏi liên quan đến dịch vụ nha khoa, bạn có thể nói s�
 Câu hỏi: {query}
 Trả lời:"""
 
-        response = client.chat.completions.create(
-            model=model_name,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=None
+        response = client.models.generate_content(
+            model=MODEL_ID,
+            contents=prompt,
         )
-        answer = response.choices[0].message.content
+
+        answer = response.text.strip()
         cleaned_answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL).strip()
         return cleaned_answer
     except Exception as e:
-        return f"Lỗi khi gọi API chitchat: {str(e)}"
+        return f"Lỗi khi gọi Vertex AI (chitchat): {str(e)}"
+
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -129,6 +128,7 @@ def chat():
 @app.route('/', methods=['GET'])
 def health_check():
     return jsonify({"status": "healthy"}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
