@@ -32,15 +32,14 @@ Viết lại câu hỏi (chỉ trả về câu hỏi đã viết lại, không t
             )
 
             rewritten = response.text.strip()
-            cleaned = re.sub(r"<think>.*?</think>", "", rewritten, flags=re.DOTALL).strip()
 
             print("\n========== REFLECTION DEBUG ==========")
             print(f"Original Q: {question}")
             print(f"History: {history_text}")
-            print(f"Rewritten Q: {cleaned}")
+            print(f"Rewritten Q: {rewritten}")
             print("=====================================\n")
 
-            return cleaned if cleaned else question
+            return rewritten if rewritten else question
         except Exception as e:
             print(f"[Reflection Error] {e}")
             return question
