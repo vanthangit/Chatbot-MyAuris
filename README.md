@@ -53,12 +53,13 @@ Pipeline chính của hệ thống bao gồm:
 ### 1️⃣ Clone repo & cài môi trường
 ```bash
 git clone https://github.com/vanthangit/Chatbot-MyAuris.git
-cd build-chatbot
+cd app
 pip install -r requirements.txt
 ```
 
 ### 2️⃣ Crawl & xử lý dữ liệu
 ```bash
+cd craw_data
 python run_pipeline.py
 ```
 
